@@ -1,0 +1,50 @@
+/project-root
+|-- /app
+|   |-- /api
+|   |   |-- /v1
+|   |       |-- /endpoints
+|   |       |   |-- __init__.py
+|   |       |   |-- user.py
+|   |       |   |-- order.py
+|   |       |-- __init__.py
+|   |       |-- dependencies.py
+|   |       |-- routers.py
+|   |-- /core
+|   |   |-- __init__.py
+|   |   |-- config.py
+|   |   |-- security.py
+|   |-- /models
+|   |   |-- __init__.py
+|   |   |-- user.py
+|   |   |-- order.py
+|   |-- /schemas
+|   |   |-- __init__.py
+|   |   |-- user.py
+|   |   |-- order.py
+|   |-- /services
+|   |   |-- __init__.py
+|   |   |-- user_service.py
+|   |   |-- order_service.py
+|   |-- /workers
+|   |   |-- __init__.py
+|   |   |-- background_tasks.py
+|   |-- __init__.py
+|   |-- main.py
+|-- /tests
+|   |-- /unit
+|   |-- /integration
+|-- /migrations
+|   |-- /versions
+|   |-- env.py
+|   |-- script.py.mako
+|-- /scripts
+|   |-- init_db.py
+|-- /config
+|   |-- docker-compose.yml
+|   |-- Dockerfile
+|   |-- .env
+|-- /docs
+|-- pyproject.toml
+|-- README.md
+|-- .gitignore
+|-- alembic.ini
