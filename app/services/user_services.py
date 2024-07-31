@@ -25,11 +25,12 @@ def create_user(db: Session, user: UserSchemas.UserCreate):
 
 
 def update_user(db: Session, user: UserSchemas.UserUpdate, user_id: int):
-    db_user = db.query(UserModel).filter(UserModel.User.id == user_id).first()
-    for key in user.keys():
-        if key in db_user.keys():
-            db_user[key] = user[key]
+    db_user = db.query(UserModel.User).filter(UserModel.User.id == user_id).first()
+    for key, value in user.items():
+        if key == "id":
+            continue
+        setattr(db_user, key, value)
 
     db.commit()
-    db.refresh()
+    db.refresh(db_user)
     return db_user

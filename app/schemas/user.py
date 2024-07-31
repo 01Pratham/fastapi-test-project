@@ -28,7 +28,7 @@ class UserCreate(UserBase):
         return v
 
 
-class UserUpdate(UserBase):
+class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None

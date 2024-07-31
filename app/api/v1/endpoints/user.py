@@ -47,7 +47,7 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
     )
 
 
-@router.put("/update/{user_id}")
+@router.put("/update/{user_id}", response_model=UserSchemas.UserResponse)
 async def update_user(
     user_id: int, user: UserSchemas.UserUpdate, db: Session = Depends(get_db)
 ):
@@ -55,7 +55,7 @@ async def update_user(
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return Response(
-        json_data=UserServices.update_user(db, db_user, user_id),
+        json_data=UserServices.update_user(db, user.dict(exclude_unset=True), user_id),
         message="Records updated Successfully",
         status_code=200,
     )
