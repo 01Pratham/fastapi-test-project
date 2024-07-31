@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+
+# Virtual environment directories
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+environment/
+
+# Python virtual environment
+.Python
+
+# Environment variables files
+*.env
+
+# Other potential ignores for Python projects
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Ignore pyenv
+.python-version
+
+# Ignore Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+
+# Ignore Flask stuff:
+instance/
+.webassets-cache
+
+# Ignore Scrapy stuff:
+.scrapy
+
+# Ignore Jupyter Notebook stuff:
+.ip
