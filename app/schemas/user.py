@@ -5,7 +5,6 @@ from schemas.DefaultResponse import DefaultResponse
 
 
 class UserBase(BaseModel):
-    id: Optional[int] = None
     name: str
     email: str
 
@@ -13,8 +12,14 @@ class UserBase(BaseModel):
         orm_mode = True
 
 
+class ResBase(UserBase):
+    id: Optional[int] = None
+    created_date: Optional[str] = None
+    updated_date: Optional[str] = None
+
+
 class UserResponse(DefaultResponse):
-    data: Union[UserBase, List[UserBase]]
+    data: Union[ResBase, List[ResBase]]
 
 
 class UserCreate(UserBase):
@@ -28,7 +33,7 @@ class UserCreate(UserBase):
         return v
 
 
-class UserUpdate(BaseModel):
+class UserUpdate(UserBase):
     name: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None

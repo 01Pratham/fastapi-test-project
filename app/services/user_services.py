@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 
 from models import user as UserModel
 from schemas import user as UserSchemas
@@ -12,8 +13,17 @@ def get_user_by_email(db: Session, email: str):
     return db.query(UserModel.User).filter(UserModel.User.email == email).first()
 
 
-def get_users(db: Session, limit: int = 100):
-    return db.query(UserModel.User).limit(limit).all()
+def get_users(db: Session, limit: int, deleted: bool):
+    if deleted:
+        db_users = db.query(UserModel.User).limit(limit).all()
+    else:
+        db_users = (
+            db.query(UserModel.User)
+            .filter(UserModel.User.is_deleted == False)
+            .limit(limit)
+            .all()
+        )
+    return db_users
 
 
 def create_user(db: Session, user: UserSchemas.UserCreate):
@@ -30,7 +40,16 @@ def update_user(db: Session, user: UserSchemas.UserUpdate, user_id: int):
         if key == "id":
             continue
         setattr(db_user, key, value)
+    db_user.updated_date = func.now()
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 
+
+def delete_user(db: Session, user_id: int):
+    db_user = db.query(UserModel.User).filter(UserModel.User.id == user_id).first()
+    db_user.is_deleted = True
+    db_user.updated_date = func.now()
     db.commit()
     db.refresh(db_user)
     return db_user

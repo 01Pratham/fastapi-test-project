@@ -13,9 +13,6 @@ environment/
 # Python virtual environment
 .Python
 
-# Environment variables files
-*.env
-
 # Other potential ignores for Python projects
 build/
 develop-eggs/
