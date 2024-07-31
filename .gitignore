@@ -47,3 +47,6 @@ instance/
 
 # Ignore Jupyter Notebook stuff:
 .ip
+
+
+migrations/versions
