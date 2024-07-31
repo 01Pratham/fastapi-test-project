@@ -26,7 +26,9 @@ async def post_user(user: UserSchemas.UserCreate, db: Session = Depends(get_db))
 
 
 @router.get("/", response_model=UserSchemas.UserResponse)
-async def get_users(limit: int = 100, deleted: bool=False, db: Session = Depends(get_db)):
+async def get_users(
+    limit: int = 100, deleted: bool = False, db: Session = Depends(get_db)
+):
     users = UserServices.get_users(db=db, limit=limit, deleted=deleted)
     return Response(
         json_data=users,
@@ -47,6 +49,7 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
     )
 
 
+# @router.put("/update/{user_id}")
 @router.put("/update/{user_id}", response_model=UserSchemas.UserResponse)
 async def update_user(
     user_id: int, user: UserSchemas.UserUpdate, db: Session = Depends(get_db)
@@ -69,5 +72,19 @@ async def update_user(user_id: int, db: Session = Depends(get_db)):
     return Response(
         json_data=UserServices.delete_user(db, user_id),
         message="Records Deleted Successfully",
+        status_code=200,
+    )
+
+
+@router.post("/auth", response_model=UserSchemas.UserResponse)
+async def authenticate(user: UserSchemas.AuthUser, db: Session = Depends(get_db)):
+    db_user = UserServices.authenticate_user(db, user)
+
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return Response(
+        json_data=db_user,
+        message="Records Authenticated Successfully",
         status_code=200,
     )
