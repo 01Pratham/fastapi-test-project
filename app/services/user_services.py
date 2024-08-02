@@ -2,18 +2,18 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 from sqlalchemy import and_
 
-from models import user as UserModel
-from schemas import user as UserSchemas
 
-import bcrypt
+from app.models import users as UserModel
+from schemas import user as UserSchemas
+from .auth_services import bcrypt_context, oauth2_bearer
 
 
 def get_user(db: Session, user_id: int):
     return db.query(UserModel.User).filter(UserModel.User.id == user_id).first()
 
 
-def get_user_by_email(db: Session, email: str):
-    return db.query(UserModel.User).filter(UserModel.User.email == email).first()
+def get_user_by_username(db: Session, username: str):
+    return db.query(UserModel.User).filter(UserModel.User.username == username).first()
 
 
 def get_users(db: Session, limit: int, deleted: bool):
@@ -30,7 +30,8 @@ def get_users(db: Session, limit: int, deleted: bool):
 
 
 def create_user(db: Session, user: UserSchemas.UserCreate):
-    db_user = UserModel.User(email=user.email, name=user.name, password=user.password)
+    user_dict = dict(user)
+    db_user = UserModel.User(**user_dict)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -59,15 +60,21 @@ def delete_user(db: Session, user_id: int):
 
 
 def authenticate_user(db: Session, user):
-    # Retrieve the user by email
-    db_user =  db.query(UserModel.User).filter(UserModel.User.email == user.email).first()
-    
+    db_user = (
+        db.query(UserModel.User)
+        .filter(UserModel.User.username == user.username)
+        .first()
+    )
 
     if not db_user:
-        return None
-    if not bcrypt.checkpw(
-        user.password.encode("utf-8"), db_user.password.encode("utf-8")
+        return False
+    if (
+        not bcrypt_context.verify(
+            user.password.encode("utf-8"), db_user.password.encode("utf-8")
+        )
+        or db_user.is_deleted
+        or not db_user.is_active
     ):
-        return None
+        return False
 
     return db_user
