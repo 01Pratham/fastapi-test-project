@@ -1,8 +1,8 @@
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Header
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import timedelta, datetime
-from typing import Annotated
+from typing import Annotated, Optional
 from starlette import status
 from jose import JWTError, jwt
 
@@ -23,11 +23,7 @@ async def create_access_token(
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-async def verify_password(plain_password, hashed_password):
-    return bcrypt_context.verify(plain_password, hashed_password)
-
-
-async def get_current_user(token: str) -> dict:
+async def verify_token(token: str):
     try:
         payload = dict(jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]))
         username = payload["username"]
@@ -40,6 +36,33 @@ async def get_current_user(token: str) -> dict:
         return {"username": username, "id": user_id}
 
     except JWTError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate user",
+        )
+
+
+async def get_current_user(
+    authorization: Annotated[Optional[str], Header()] = None
+) -> dict:
+    if authorization is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authorization header missing",
+        )
+    try:
+        token = authorization.split(" ")[1]  # Assuming "Bearer <token>"
+        payload = dict(jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]))
+        username = payload["username"]
+        user_id = payload["id"]
+        if username is None or user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate user",
+            )
+        return {"username": username, "id": user_id}
+
+    except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate user",

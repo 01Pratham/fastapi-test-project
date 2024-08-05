@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
-from typing import List, Annotated
+from typing import List, Annotated, Optional
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 
@@ -38,10 +38,12 @@ async def post_user(user: UserSchemas.UserCreate, db: Session = Depends(get_db))
     "/", response_model=UserSchemas.UserResponse, status_code=status.HTTP_200_OK
 )
 async def get_users(
-    limit: int = 100,
+    limit: int = 20,
     deleted: bool = False,
     db: Session = Depends(get_db),
-    current_user: UserSchemas.AuthUser = Depends(AuthServices.get_current_user),
+    current_user: Annotated[
+        Optional[dict], Depends(AuthServices.get_current_user)
+    ] = None,
 ):
     users = UserServices.get_users(db=db, limit=limit, deleted=deleted)
     return Response(
@@ -145,14 +147,9 @@ async def login_for_access_token(
     )
 
 
-@router.post(
-    "/verify-token",
+@router.get(
+    "/verify-token/",
 )
-async def verify_token(
-    token: Annotated[
-        str,
-        Depends(AuthServices.oauth2_bearer),
-    ]
-):
-    res = await AuthServices.get_current_user(token=token)
+async def verify_token(token: str):
+    res = await AuthServices.verify_token(token = token)
     return res
