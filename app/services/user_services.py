@@ -3,26 +3,26 @@ from sqlalchemy.sql import func
 from sqlalchemy import and_
 
 
-from app.models import users as UserModel
+from app.models.users import UserModel
 from schemas import user as UserSchemas
 from .auth_services import bcrypt_context, oauth2_bearer
 
 
 def get_user(db: Session, user_id: int):
-    return db.query(UserModel.User).filter(UserModel.User.id == user_id).first()
+    return db.query(UserModel).filter(UserModel.id == user_id).first()
 
 
 def get_user_by_username(db: Session, username: str):
-    return db.query(UserModel.User).filter(UserModel.User.username == username).first()
+    return db.query(UserModel).filter(UserModel.username == username).first()
 
 
 def get_users(db: Session, limit: int, deleted: bool):
     if deleted:
-        db_users = db.query(UserModel.User).limit(limit).all()
+        db_users = db.query(UserModel).limit(limit).all()
     else:
         db_users = (
-            db.query(UserModel.User)
-            .filter(UserModel.User.is_deleted == False)
+            db.query(UserModel)
+            .filter(UserModel.is_deleted == False)
             .limit(limit)
             .all()
         )
@@ -31,7 +31,7 @@ def get_users(db: Session, limit: int, deleted: bool):
 
 def create_user(db: Session, user: UserSchemas.UserCreate):
     user_dict = dict(user)
-    db_user = UserModel.User(**user_dict)
+    db_user = UserModel(**user_dict)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -39,7 +39,7 @@ def create_user(db: Session, user: UserSchemas.UserCreate):
 
 
 def update_user(db: Session, user: UserSchemas.UserUpdate, user_id: int):
-    db_user = db.query(UserModel.User).filter(UserModel.User.id == user_id).first()
+    db_user = db.query(UserModel).filter(UserModel.id == user_id).first()
     for key, value in user.items():
         if key == "id":
             continue
@@ -51,7 +51,7 @@ def update_user(db: Session, user: UserSchemas.UserUpdate, user_id: int):
 
 
 def delete_user(db: Session, user_id: int):
-    db_user = db.query(UserModel.User).filter(UserModel.User.id == user_id).first()
+    db_user = db.query(UserModel).filter(UserModel.id == user_id).first()
     db_user.is_deleted = True
     db_user.updated_date = func.now()
     db.commit()
@@ -61,8 +61,8 @@ def delete_user(db: Session, user_id: int):
 
 def authenticate_user(db: Session, user):
     db_user = (
-        db.query(UserModel.User)
-        .filter(UserModel.User.username == user.username)
+        db.query(UserModel)
+        .filter(UserModel.username == user.username)
         .first()
     )
 

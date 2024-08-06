@@ -25,10 +25,10 @@ async def get_posts(
         Optional[dict], Depends(AuthServices.get_current_user)
     ] = None,
 ):
-    users = PostServices.get_posts(db=db, limit=limit)
+    posts = PostServices.get_posts(db=db, limit=limit)
     return Response(
-        json_data=users,
-        message="Data for all Users",
+        json_data=posts,
+        message="Posts for all Users",
         status_code=status.HTTP_200_OK,
     )
 
@@ -43,9 +43,28 @@ async def get_posts_by_username(
         Optional[dict], Depends(AuthServices.get_current_user)
     ] = None,
 ):
-    users = PostServices.get_posts_by_username(db=db, username=username)
+    posts = PostServices.get_posts_by_username(db=db, username=username)
     return Response(
-        json_data=users,
-        message="Data for all Users",
+        json_data=posts,
+        message="Posts for @{username}",
+        status_code=status.HTTP_200_OK,
+    )
+
+
+@router.post(
+    "/create_new", response_model=PostsResponse, status_code=status.HTTP_201_CREATED
+)
+async def create_new_post(
+    post_data: PostCreate,
+    db: Session = Depends(get_db),
+    current_user: Annotated[
+        Optional[dict], Depends(AuthServices.get_current_user)
+    ] = None,
+):
+    db_post = PostServices.create_post(db, post_data, current_user)
+
+    return Response(
+        json_data=db_post,
+        message="Post Created Successfully",
         status_code=status.HTTP_200_OK,
     )

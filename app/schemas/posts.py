@@ -7,7 +7,6 @@ from datetime import datetime
 
 class PostBase(BaseModel):
 
-    id: int
     post: str
     post_description: Optional[str] = None
 
@@ -20,6 +19,7 @@ class PostCreate(PostBase):
 
 
 class ResponseBase(PostBase):
+    id: int
     user_username: int
     likes_count: Optional[int] = 0
     likers: Optional[list] = []

@@ -7,7 +7,7 @@ from pathlib import Path
 from starlette import status
 
 if __name__ == "__main__" and __package__ is None:
-    print("Please run: python -m app.main")
+    print("This wont work kindly use another command")
     exit()
 
 sys.path.append(str(Path(__file__).resolve().parent))
