@@ -1,11 +1,10 @@
 from pydantic import BaseModel
-from .DefaultResponse import DefaultResponse
+from .DefaultResponse_schemas import DefaultResponse
 from typing import Union, List
 
 
 class Token(BaseModel):
-    access_token: str
-    token_type: str
+    token: str
 
 
 class TokenData(BaseModel):

@@ -32,3 +32,4 @@ class Helpers:
                 "Password must contain at least one number and one special character."
             )
         return v
+    

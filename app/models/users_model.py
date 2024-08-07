@@ -4,10 +4,11 @@ from sqlalchemy.sql import func
 
 
 from core.db import Base
-from services.auth_services import bcrypt_context, oauth2_bearer
+from services.auth_services import AuthServices
+# from .posts_model import PostsModel
 
 
-class User(Base):
+class UserModel(Base):
     __tablename__ = "tbl_users_master"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(255), unique=True, index=True)
@@ -22,17 +23,20 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_deleted = Column(Boolean, default=False)
 
+    post = relationship("PostsModel", back_populates="user")
+    # __table_args__ = {"extend_existing": True}  # Add this line
+
     def set_password(self, password: str):
-        self.password = bcrypt_context.hash(password.encode("utf-8"))
+        self.password = AuthServices.hash_password(password.encode("utf-8"))
 
 
-@event.listens_for(User, "before_insert")
+@event.listens_for(UserModel, "before_insert")
 def hash_password_before_insert(mapper, connection, target):
     if target.password:
         target.set_password(target.password)
 
 
-@event.listens_for(User, "before_update")
+@event.listens_for(UserModel, "before_update")
 def hash_password_before_update(mapper, connection, target):
     state = target.__dict__.get("_sa_instance_state")
     if "password" in state.attrs and state.attrs.password.history.has_changes():

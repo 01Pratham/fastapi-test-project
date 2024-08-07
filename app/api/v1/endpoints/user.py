@@ -5,11 +5,11 @@ from typing import List, Annotated, Optional
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 
-from app.models import users as UserModel
-from schemas import user as UserSchemas
-from schemas import token as TokenSchema
-from services import user_services as UserServices
-from services import auth_services as AuthServices
+from app.models.users_model import UserModel
+from app.schemas import user_schemas as UserSchemas
+from app.schemas import token_schemas as TokenSchema
+from services.user_services import UserServices
+from services.auth_services import AuthServices
 from app.utils.response import Response
 from core.db import SessionLocal, engine, get_db
 
@@ -128,7 +128,7 @@ async def update_user(
     name="auth",
 )
 async def login_for_access_token(
-    user: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)
+    user: UserSchemas.AuthUser, db: Session = Depends(get_db)
 ):
     db_user = UserServices.authenticate_user(db, user)
     if not db_user or db_user is None:
@@ -141,7 +141,7 @@ async def login_for_access_token(
     )
 
     return Response(
-        json_data={"access_token": token, "token_type": "bearer"},
+        json_data={"token": token},
         message="Access Token Created Successfully",
         status_code=status.HTTP_201_CREATED,
     )
@@ -151,5 +151,5 @@ async def login_for_access_token(
     "/verify-token/",
 )
 async def verify_token(token: str):
-    res = await AuthServices.verify_token(token = token)
+    res = await AuthServices.verify_token(token=token)
     return res

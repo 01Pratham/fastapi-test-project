@@ -1,13 +1,12 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, root_validator
 from typing import List, Optional, Union
 from utils.helpers import Helpers
-from .DefaultResponse import DefaultResponse
+from .DefaultResponse_schemas import DefaultResponse
 from datetime import datetime
 
 
 class PostBase(BaseModel):
 
-    id: int
     post: str
     post_description: Optional[str] = None
 
@@ -20,7 +19,8 @@ class PostCreate(PostBase):
 
 
 class ResponseBase(PostBase):
-    user_username: int
+    id: int
+    username: Optional[str] = ""
     likes_count: Optional[int] = 0
     likers: Optional[list] = []
     comments: Optional[list] = []
