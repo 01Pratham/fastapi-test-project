@@ -1,7 +1,7 @@
 from pydantic import BaseModel, validator
 from typing import List, Optional, Union
 from utils.helpers import Helpers
-from .DefaultResponse import DefaultResponse
+from .DefaultResponse_schemas import DefaultResponse
 from datetime import datetime
 
 

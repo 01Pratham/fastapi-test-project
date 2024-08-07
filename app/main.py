@@ -5,9 +5,11 @@ import uvicorn
 import sys
 from pathlib import Path
 from starlette import status
+from fastapi.middleware.cors import CORSMiddleware
+
 
 if __name__ == "__main__" and __package__ is None:
-    print("This wont work kindly use another command")
+    print("Please run: python -m app.main")
     exit()
 
 sys.path.append(str(Path(__file__).resolve().parent))
@@ -17,6 +19,20 @@ from utils.response import Response
 from api.v1.router import Router as V1_Router
 
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 Base.metadata.create_all(bind=engine)
 

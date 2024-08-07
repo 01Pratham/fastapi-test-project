@@ -4,7 +4,8 @@ from sqlalchemy.sql import func
 
 
 from core.db import Base
-from services.auth_services import bcrypt_context, oauth2_bearer
+from services.auth_services import AuthServices
+# from .posts_model import PostsModel
 
 
 class UserModel(Base):
@@ -22,12 +23,11 @@ class UserModel(Base):
     is_active = Column(Boolean, default=True)
     is_deleted = Column(Boolean, default=False)
 
-    __table_args__ = {"extend_existing": True}
-
-    # posts = relationship("PostsModel", back_populates="users")
+    post = relationship("PostsModel", back_populates="user")
+    # __table_args__ = {"extend_existing": True}  # Add this line
 
     def set_password(self, password: str):
-        self.password = bcrypt_context.hash(password.encode("utf-8"))
+        self.password = AuthServices.hash_password(password.encode("utf-8"))
 
 
 @event.listens_for(UserModel, "before_insert")
