@@ -51,7 +51,9 @@ class AuthServices:
 
     @classmethod
     async def get_current_user(
-        cls, authorization: Annotated[Optional[str], Header()]
+        cls,
+        authorization: Annotated[Optional[str], Header()],
+        # authorization: Annotated[str, Depends(_oauth2_bearer)],
     ) -> dict:
         if authorization is None:
             raise HTTPException(

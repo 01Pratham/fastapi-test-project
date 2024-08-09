@@ -17,7 +17,6 @@ from core.db import SessionLocal, engine, get_db
 router = APIRouter()
 
 
-# @router.post("/")
 @router.post(
     "/", response_model=UserSchemas.UserResponse, status_code=status.HTTP_201_CREATED
 )
@@ -54,7 +53,7 @@ async def get_users(
 
 
 @router.get(
-    "/id/{user_id}/",
+    "/id/{user_id}",
     response_model=UserSchemas.UserResponse,
     status_code=status.HTTP_200_OK,
 )
@@ -75,7 +74,6 @@ async def get_user(
     )
 
 
-# @router.put("/update/{user_id}")
 @router.put(
     "/update/{user_id}",
     response_model=UserSchemas.UserResponse,
@@ -128,7 +126,9 @@ async def update_user(
     name="auth",
 )
 async def login_for_access_token(
-    user: UserSchemas.AuthUser, db: Session = Depends(get_db)
+    user: UserSchemas.AuthUser,
+    # user: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Session = Depends(get_db),
 ):
     db_user = UserServices.authenticate_user(db, user)
     if not db_user or db_user is None:
