@@ -20,3 +20,5 @@ class PostsModel(Base):
     # __table_args__ = {"extend_existing": True}  # Add this line
 
     user = relationship("UserModel", back_populates="post")
+    likes = relationship("LikesModel", back_populates="post")
+    comments = relationship("CommentsModel", back_populates="post")

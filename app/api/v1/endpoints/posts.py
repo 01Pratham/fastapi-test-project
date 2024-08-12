@@ -18,7 +18,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/create/",
+    "/create",
     response_model=PostsSchemas.PostsResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -71,7 +71,7 @@ async def get_posts_by_username(
         Optional[dict], Depends(AuthServices.get_current_user)
     ] = None,
 ):
-    users = PostServices.get_posts_by_username(db=db, username=username)
+    users = PostServices.get_posts_by_username(db=db, username=username.lower())
     return Response(
         json_data=users,
         message="Data for all Users",

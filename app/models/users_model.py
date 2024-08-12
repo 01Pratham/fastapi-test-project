@@ -5,7 +5,6 @@ from sqlalchemy.sql import func
 
 from core.db import Base
 from services.auth_services import AuthServices
-# from .posts_model import PostsModel
 
 
 class UserModel(Base):
@@ -24,16 +23,36 @@ class UserModel(Base):
     is_deleted = Column(Boolean, default=False)
 
     post = relationship("PostsModel", back_populates="user")
-    # __table_args__ = {"extend_existing": True}  # Add this line
+    likes = relationship("LikesModel", back_populates="user")
+    followings = relationship(
+        "FollowingsModel",
+        foreign_keys="[FollowingsModel.user_id]",
+        back_populates="user",
+    )
+    followers = relationship(
+        "FollowingsModel",
+        foreign_keys="[FollowingsModel.following_user_id]",
+        back_populates="following_user",
+    )
+    comments = relationship("CommentsModel", back_populates="user")
 
     def set_password(self, password: str):
         self.password = AuthServices.hash_password(password.encode("utf-8"))
+
+    def username_to_lower(self, username: str):
+        self.username = username.lower()
+
+
+# Import FollowingsModel here to avoid circular import
+from .followings_model import FollowingsModel
 
 
 @event.listens_for(UserModel, "before_insert")
 def hash_password_before_insert(mapper, connection, target):
     if target.password:
         target.set_password(target.password)
+    if target.username:
+        target.username_to_lower(target.username)
 
 
 @event.listens_for(UserModel, "before_update")
@@ -41,3 +60,5 @@ def hash_password_before_update(mapper, connection, target):
     state = target.__dict__.get("_sa_instance_state")
     if "password" in state.attrs and state.attrs.password.history.has_changes():
         target.set_password(target.password)
+    if "username" in state.attrs and state.attrs.password.history.has_changes():
+        target.username_to_lower(target.username)
