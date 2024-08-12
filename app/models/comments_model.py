@@ -17,7 +17,7 @@ class CommentsModel(Base):
     comment_desciption = Column(String(255))
     created_date = Column(DateTime(timezone=True), server_default=func.now())
     updated_date = Column(DateTime(timezone=True), server_default=func.now())
-    is_commenter_user_deleted = Column(Boolean, default=False)
+    is_user_deleted = Column(Boolean, default=False)
 
     user = relationship("UserModel", back_populates="comments")
     post = relationship("PostsModel", back_populates="comments")

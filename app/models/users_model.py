@@ -39,6 +39,9 @@ class UserModel(Base):
     def set_password(self, password: str):
         self.password = AuthServices.hash_password(password.encode("utf-8"))
 
+    def username_to_lower(self, username: str):
+        self.username = username.lower()
+
 
 # Import FollowingsModel here to avoid circular import
 from .followings_model import FollowingsModel
@@ -48,6 +51,8 @@ from .followings_model import FollowingsModel
 def hash_password_before_insert(mapper, connection, target):
     if target.password:
         target.set_password(target.password)
+    if target.username:
+        target.username_to_lower(target.username)
 
 
 @event.listens_for(UserModel, "before_update")
@@ -55,3 +60,5 @@ def hash_password_before_update(mapper, connection, target):
     state = target.__dict__.get("_sa_instance_state")
     if "password" in state.attrs and state.attrs.password.history.has_changes():
         target.set_password(target.password)
+    if "username" in state.attrs and state.attrs.password.history.has_changes():
+        target.username_to_lower(target.username)

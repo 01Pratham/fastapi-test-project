@@ -20,6 +20,8 @@ class PostCreate(PostBase):
 class ResponseBase(PostBase):
     id: int
     username: Optional[str] = ""
+    name: Optional[str] = ""
+    profile_pic: Optional[str] = ""
     likes_count: Optional[int] = 0
     comments_count: Optional[int] = 0
     created_date: Optional[datetime] = None

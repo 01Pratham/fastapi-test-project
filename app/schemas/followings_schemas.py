@@ -10,7 +10,7 @@ class FollowingsBase(BaseModel):
 
 
 class Follows(BaseModel):
-    user_id: int
+    id: int
     username: str
     name: str
     profile_pic: str

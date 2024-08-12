@@ -26,7 +26,9 @@ class FollowingServices:
                     FollowingsModel.following_user_id,
                     FollowingsModel.updated_date,
                 )
-                .join(FollowingsModel, UserModel.id == FollowingsModel.following_user_id)
+                .join(
+                    FollowingsModel, UserModel.id == FollowingsModel.following_user_id
+                )
                 .filter(
                     FollowingsModel.user_id == user_id,
                     UserModel.is_deleted == False,
@@ -58,10 +60,6 @@ class FollowingServices:
         followers = [
             {
                 **user._asdict(),
-                # "username": user.username,
-                # "name": user.name,
-                # "user_id": user.user_id,
-                # "profile_pic": user.profile_pic,
             }
             for user in db_users
         ]
@@ -104,3 +102,4 @@ class FollowingServices:
             .first()
         )
         db.delete(db_followers)
+        return True

@@ -15,6 +15,7 @@ class FollowingsModel(Base):
     created_date = Column(DateTime(timezone=True), server_default=func.now())
     updated_date = Column(DateTime(timezone=True), server_default=func.now())
     is_following_user_deleted = Column(Boolean, default=False)
+    is_follower_user_deleted = Column(Boolean, default=False)
 
     user = relationship(
         "UserModel", foreign_keys=[user_id], back_populates="followings"
